@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">VkApp1</string>
+    <string name="list_menu_icon">list_menu_icon</string>
+    <string name="list_menu_name">МЕНЮ</string>
+    <string name="menu_tolist">К СПИСКУ</string>
+    <string name="menu_accexit">Выйти с аккаунта</string>
+    <string name="menu_loadall">Загрузить всё</string>
+    <string name="menu_place">Место хранения</string>
+    <string name="menu_theme">Сменить тему</string>
+    <string name="menu_deleteall">Удалить всё</string>
+    <string name="menu_about">О программе</string>
+    <string name="about_text">Информация о приложении:</string>
 </resources>
