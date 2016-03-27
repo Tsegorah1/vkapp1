@@ -23,4 +23,33 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, AboutActivity.class);
         startActivity(intent);
     }
+
+    public void onClickTolist(View view) {
+        Intent intent = new Intent(this, ListActivity.class);
+        startActivity(intent);
+    }
+
+    public void onClickLogin(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    public void onClickLoad(View view) {
+    }
+
+    public void onClickPlace(View view) {
+        Intent intent = new Intent(this, PlaceActivity.class);
+        startActivity(intent);
+    }
+
+    public void onClickStyle(View view) {
+        Intent intent = new Intent(this, ThemeActivity.class);
+        startActivity(intent);
+    }
+
+    public void onClickRefresh(View view) {
+    }
+
+    public void onClickDelete(View view) {
+    }
 }

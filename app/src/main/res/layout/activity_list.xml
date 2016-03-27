@@ -34,6 +34,23 @@
             android:onClick="onClickMenu"
             android:nestedScrollingEnabled="false" />
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton2"
+                android:background="#00e53535"
+                android:src="@drawable/menu_icon"
+                android:contentDescription="@string/list_menu_icon"
+                android:nestedScrollingEnabled="false"
+                android:onClick="onClickSearch" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <ListView

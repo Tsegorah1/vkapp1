@@ -10,4 +10,30 @@
     <string name="menu_deleteall">Удалить всё</string>
     <string name="menu_about">О программе</string>
     <string name="about_text">Информация о приложении:</string>
+    <string name="menu_listreload">Обновить список</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="search_string">Строка для поиска:</string>
+    <string name="search_field">Поле для поиска:</string>
+    <string name="search_search">Искать</string>
+    <string name="search_reset">Сбросить поиск</string>
+    <string name="login_login">Логин:</string>
+    <string name="login_pass">Пароль:</string>
+    <string name="login_go">Авторизоваться</string>
+    <string name="theme_dark">Тёмная тема</string>
+    <string name="theme_light">Светлая тема</string>
+    <string name="place_path">Путь:</string>
+    <string name="place_accept">Принять</string>
 </resources>
