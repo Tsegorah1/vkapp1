@@ -36,4 +36,7 @@
     <string name="theme_light">Светлая тема</string>
     <string name="place_path">Путь:</string>
     <string name="place_accept">Принять</string>
+    <string name="sort_revers">В обратном порядке</string>
+    <string name="sort_field">Поле для сортировки:</string>
+    <string name="sort_sort">Сортировать</string>
 </resources>

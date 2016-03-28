@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/place_accept"
                 android:id="@+id/button5"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:onClick="onClickAccept" />
         </LinearLayout>
     </LinearLayout>

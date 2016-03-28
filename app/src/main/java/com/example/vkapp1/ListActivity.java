@@ -23,4 +23,9 @@ public class ListActivity extends Activity {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
     }
+
+    public void onClickSort(View view) {
+        Intent intent = new Intent(this, SortActivity.class);
+        startActivity(intent);
+    }
 }
