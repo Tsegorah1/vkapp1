@@ -39,4 +39,5 @@
     <string name="sort_revers">В обратном порядке</string>
     <string name="sort_field">Поле для сортировки:</string>
     <string name="sort_sort">Сортировать</string>
+    <string name="err_message">Ошибка авторизации</string>
 </resources>
