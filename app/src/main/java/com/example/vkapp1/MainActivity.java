@@ -6,21 +6,27 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.vk.sdk.VKAccessToken;
 import com.vk.sdk.VKCallback;
 import com.vk.sdk.VKScope;
 import com.vk.sdk.VKSdk;
+import com.vk.sdk.api.VKApi;
+import com.vk.sdk.api.VKApiConst;
 import com.vk.sdk.api.VKError;
+import com.vk.sdk.api.VKParameters;
+import com.vk.sdk.api.VKRequest;
+import com.vk.sdk.api.VKResponse;
+import com.vk.sdk.api.model.VKApiAudio;
+import com.vk.sdk.api.model.VKList;
 
 //import android.support.v7.app.AppCompatActivity;
 
 public class MainActivity extends Activity {
 
     //private String[] scope = new String[] {VKScope.AUDIO};
-    final String LOG_TAG = "myLogs";
+    //final String LOG_TAG = "myLogs";
     DBHelper dbHelper;
 
     @Override
@@ -34,8 +40,40 @@ public class MainActivity extends Activity {
         }
         dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+/*
+        VKParameters params = new VKParameters();
+        params.put(VKApiConst.COUNT, 6000);
+        VKRequest requestAudio = VKApi.audio().get(params);
+        final VKList<VKApiAudio> vkList = new VKList();
+        requestAudio.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                super.onComplete(response);
 
+                for(int i = 0;i<((VKList<VKApiAudio>)response.parsedModel).size();i++){
+                    VKApiAudio vkApiAudio = ((VKList<VKApiAudio>)response.parsedModel).get(i);
+                    vkList.add(vkApiAudio);
+                }
+            }
+
+            @Override
+            public void attemptFailed(VKRequest request, int attemptNumber, int totalAttempts) {
+                super.attemptFailed(request, attemptNumber, totalAttempts);
+            }
+
+            @Override
+            public void onError(VKError error) {
+                super.onError(error);
+            }
+
+            @Override
+            public void onProgress(VKRequest.VKProgressType progressType, long bytesLoaded, long bytesTotal) {
+                super.onProgress(progressType, bytesLoaded, bytesTotal);
+            }
+        });
+*/
         //System.out.println(Arrays.asList(fingerprints));
+        dbHelper.close();
     }
 
     @Override
@@ -55,7 +93,12 @@ public class MainActivity extends Activity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+/*
+    public DBHelper createDBHelper(Context context, String dbname) {
 
+        return dbHelper;
+    }
+*/
     public void onClickMenu(View view) {
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
@@ -90,6 +133,37 @@ public class MainActivity extends Activity {
     }
 
     public void onClickRefresh(View view) {
+        VKParameters params = new VKParameters();
+        params.put(VKApiConst.COUNT, 6000);
+        VKRequest requestAudio = VKApi.audio().get(params);
+        final VKList<VKApiAudio> vkList = new VKList();
+        requestAudio.executeWithListener(new VKRequest.VKRequestListener() {
+            @Override
+            public void onComplete(VKResponse response) {
+                super.onComplete(response);
+
+                for(int i = 0;i<((VKList<VKApiAudio>)response.parsedModel).size();i++){
+                    VKApiAudio vkApiAudio = ((VKList<VKApiAudio>)response.parsedModel).get(i);
+                    vkList.add(vkApiAudio);
+                }
+            }
+
+            @Override
+            public void attemptFailed(VKRequest request, int attemptNumber, int totalAttempts) {
+                super.attemptFailed(request, attemptNumber, totalAttempts);
+            }
+
+            @Override
+            public void onError(VKError error) {
+                super.onError(error);
+            }
+
+            @Override
+            public void onProgress(VKRequest.VKProgressType progressType, long bytesLoaded, long bytesTotal) {
+                super.onProgress(progressType, bytesLoaded, bytesTotal);
+            }
+        });
+
     }
 
     public void onClickDelete(View view) {
@@ -97,21 +171,45 @@ public class MainActivity extends Activity {
 
     class DBHelper extends SQLiteOpenHelper {
 
+        public String tbName1 = "vkLoaded", tbName2 = "vkActual";
+
         public DBHelper(Context context) {
             // конструктор суперкласса
             super(context, "myDB", null, 1);
         }
 
+        public DBHelper(Context context, String s) {
+            // конструктор суперкласса
+            super(context, s, null, 1);
+        }
+
         @Override
         public void onCreate(SQLiteDatabase db) {
+            //Log.d(LOG_TAG, "--- onCreate database ---");
+            // создаем таблицу с полями
+            db.execSQL("create table " + tbName1 + " ("
+                    + "id integer primary key autoincrement,"
+                    + "artist text,"
+                    + "title text"
+                    + "url text"
+                    + ");");
+            db.execSQL("create table " + tbName2 + " ("
+                    + "id integer primary key autoincrement,"
+                    + "artist text,"
+                    + "title text"
+                    + "url text"
+                    + ");");
+        }
+/*
+        public void onCreate(SQLiteDatabase db, String s) {
             Log.d(LOG_TAG, "--- onCreate database ---");
             // создаем таблицу с полями
-            db.execSQL("create table vkloaded ("
+            db.execSQL("create table " + s + " ("
                     + "id integer primary key autoincrement,"
                     + "name text,"
                     + "email text" + ");");
         }
-
+*/
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
