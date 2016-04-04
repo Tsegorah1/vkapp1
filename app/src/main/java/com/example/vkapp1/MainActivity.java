@@ -3,6 +3,7 @@ package com.example.vkapp1;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
@@ -27,7 +28,6 @@ public class MainActivity extends Activity {
 
     //private String[] scope = new String[] {VKScope.AUDIO};
     //final String LOG_TAG = "myLogs";
-    DBHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +38,7 @@ public class MainActivity extends Activity {
         if (!VKSdk.isLoggedIn()){
             VKSdk.login(this,VKScope.AUDIO);
         }
+        DBHelper dbHelper;
         dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 /*
@@ -164,6 +165,20 @@ public class MainActivity extends Activity {
             }
         });
 
+        DBHelper dbHelper;
+        dbHelper = new DBHelper(this);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        Cursor cVkLoaded;
+        cVkLoaded = db.query("vkLoaded", null, null, null, null, null, null);
+
+        Cursor cVkActual;
+        cVkActual = db.query("vkActual", null, null, null, null, null, null);
+
+        for(int i = 0; !cVkActual.isAfterLast(); i ++) {
+
+        }
+        dbHelper.close();
     }
 
     public void onClickDelete(View view) {
