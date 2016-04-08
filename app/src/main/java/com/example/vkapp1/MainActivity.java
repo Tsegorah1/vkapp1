@@ -1,9 +1,9 @@
 package com.example.vkapp1;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
@@ -94,12 +94,7 @@ public class MainActivity extends Activity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
-/*
-    public DBHelper createDBHelper(Context context, String dbname) {
 
-        return dbHelper;
-    }
-*/
     public void onClickMenu(View view) {
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
@@ -134,6 +129,7 @@ public class MainActivity extends Activity {
     }
 
     public void onClickRefresh(View view) {
+        ContentValues contentValues= new ContentValues();
         VKParameters params = new VKParameters();
         params.put(VKApiConst.COUNT, 6000);
         VKRequest requestAudio = VKApi.audio().get(params);
@@ -168,7 +164,7 @@ public class MainActivity extends Activity {
         DBHelper dbHelper;
         dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-
+/*
         Cursor cVkLoaded;
         cVkLoaded = db.query("vkLoaded", null, null, null, null, null, null);
 
@@ -177,7 +173,19 @@ public class MainActivity extends Activity {
 
         for(int i = 0; !cVkActual.isAfterLast(); i ++) {
 
+        }*/
+
+        db.delete("vkActual",null,null);
+
+        for(int i = 0;i < vkList.size(); i ++) {
+            contentValues.put("artist",vkList.get(i).artist);
+            contentValues.put("title",vkList.get(i).title);
+            contentValues.put("url",vkList.get(i).url);
+            contentValues.put("status",0);
+            contentValues.put("filepath","");
+            db.insert("vkActual",null,contentValues);
         }
+
         dbHelper.close();
     }
 
@@ -207,12 +215,16 @@ public class MainActivity extends Activity {
                     + "artist text,"
                     + "title text"
                     + "url text"
+                    + "status integer"
+                    + "filepath text"
                     + ");");
             db.execSQL("create table " + tbName2 + " ("
                     + "id integer primary key autoincrement,"
                     + "artist text,"
                     + "title text"
                     + "url text"
+                    + "status integer"
+                    + "filepath text"
                     + ");");
         }
 /*
