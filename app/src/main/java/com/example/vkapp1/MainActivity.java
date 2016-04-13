@@ -192,6 +192,7 @@ public class MainActivity extends Activity {
             @Override
             public void onError(VKError error) {
                 super.onError(error);
+                Log.i("log", "==========================" + "load error");
             }
 
             @Override
