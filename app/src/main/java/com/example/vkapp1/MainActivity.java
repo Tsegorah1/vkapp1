@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.vk.sdk.VKAccessToken;
@@ -129,7 +131,7 @@ public class MainActivity extends Activity {
     }
 
     public void onClickRefresh(View view) {
-        ContentValues contentValues= new ContentValues();
+        final ContentValues contentValues= new ContentValues();
         VKParameters params = new VKParameters();
         params.put(VKApiConst.COUNT, 6000);
         VKRequest requestAudio = VKApi.audio().get(params);
@@ -142,7 +144,44 @@ public class MainActivity extends Activity {
                 for(int i = 0;i<((VKList<VKApiAudio>)response.parsedModel).size();i++){
                     VKApiAudio vkApiAudio = ((VKList<VKApiAudio>)response.parsedModel).get(i);
                     vkList.add(vkApiAudio);
+                    Log.i("log", "========================== onComplete request");
+                    contentValues.put("artist",vkList.get(i).artist);
+                    contentValues.put("title",vkList.get(i).title);
+                    contentValues.put("url",vkList.get(i).url);
+                    contentValues.put("status",0);
+                    contentValues.put("filepath", "");
+                    Log.i("log", "========================== onComplete r cv created("+i+")");
+                    //db.insert("vkActual", null, contentValues);
+                    Log.i("log", "==========================" + vkList.get(i).title);
                 }
+                //DBHelper dbHelper;
+                //dbHelper = new DBHelper(this);
+                //SQLiteDatabase db = dbHelper.getWritableDatabase();
+/*
+        Cursor cVkLoaded;
+        cVkLoaded = db.query("vkLoaded", null, null, null, null, null, null);
+
+        Cursor cVkActual;
+        cVkActual = db.query("vkActual", null, null, null, null, null, null);
+
+        for(int i = 0; !cVkActual.isAfterLast(); i ++) {
+
+        }*/
+                Log.i("log", "========================== onComplete");
+                //db.delete("vkActual", null, null);
+                //Log.i("log", "========================== tb deleted");
+                for(int i = 0;i < vkList.size(); i ++) {
+                    contentValues.put("artist",vkList.get(i).artist);
+                    contentValues.put("title",vkList.get(i).title);
+                    contentValues.put("url",vkList.get(i).url);
+                    contentValues.put("status",0);
+                    contentValues.put("filepath", "");
+                    Log.i("log", "========================== onComplete cv created("+i+")");
+                    //db.insert("vkActual", null, contentValues);
+                    Log.i("log", "==========================" + vkList.get(i).title);
+                }
+
+                //dbHelper.close();
             }
 
             @Override
@@ -174,16 +213,18 @@ public class MainActivity extends Activity {
         for(int i = 0; !cVkActual.isAfterLast(); i ++) {
 
         }*/
-
-        db.delete("vkActual",null,null);
-
+        Log.i("log","========================== refresh");
+        //db.delete("vkActual", null, null);
+        //Log.i("log", "========================== tb deleted");
         for(int i = 0;i < vkList.size(); i ++) {
             contentValues.put("artist",vkList.get(i).artist);
             contentValues.put("title",vkList.get(i).title);
             contentValues.put("url",vkList.get(i).url);
             contentValues.put("status",0);
             contentValues.put("filepath","");
-            db.insert("vkActual",null,contentValues);
+            Log.i("log", "========================== cv created");
+            //db.insert("vkActual", null, contentValues);
+            //Log.i("log","=========================="+vkList.get(i).title);
         }
 
         dbHelper.close();
@@ -208,24 +249,30 @@ public class MainActivity extends Activity {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            //Log.d(LOG_TAG, "--- onCreate database ---");
+            //
             // создаем таблицу с полями
-            db.execSQL("create table " + tbName1 + " ("
-                    + "id integer primary key autoincrement,"
-                    + "artist text,"
-                    + "title text"
-                    + "url text"
-                    + "status integer"
-                    + "filepath text"
-                    + ");");
-            db.execSQL("create table " + tbName2 + " ("
-                    + "id integer primary key autoincrement,"
-                    + "artist text,"
-                    + "title text"
-                    + "url text"
-                    + "status integer"
-                    + "filepath text"
-                    + ");");
+            try {
+                db.execSQL("create table " + tbName1 + " ("
+                        + "_id integer primary key autoincrement,"
+                        + "artist text,"
+                        + "title text,"
+                        + "url text,"
+                        + "status integer,"
+                        + "filepath text"
+                        + ");");
+                db.execSQL("create table " + tbName2 + " ("
+                        + "_id int primary key autoincrement,"
+                        + "artist text,"
+                        + "title text,"
+                        + "url text,"
+                        + "status int,"
+                        + "filepath text"
+                        + ");");
+                Log.w("log","============================== tables created");
+            }
+            catch(SQLException ex) {
+                Log.d("log", "--- onCreate failed ---");
+            }
         }
 /*
         public void onCreate(SQLiteDatabase db, String s) {
