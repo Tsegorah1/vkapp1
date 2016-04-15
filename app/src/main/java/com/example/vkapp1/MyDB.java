@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class MyDB {
 
@@ -13,8 +14,60 @@ public class MyDB {
     private DBHelper mDBHelper;
     private SQLiteDatabase mDB;
 
+
+    public boolean isTableExists(String tableName, Context ctx, boolean openDb) {
+        Log.i("log", "============================== mydb istableexists "+tableName);
+        DBHelper dbHelper;
+        dbHelper = new DBHelper(ctx);
+        if(openDb) {
+            if(mDB == null || !mDB.isOpen()) {
+                mDB = dbHelper.getReadableDatabase();
+            }
+
+            if(!mDB.isReadOnly()) {
+                mDB.close();
+                mDB = dbHelper.getReadableDatabase();
+            }
+        }
+
+        Cursor cursor = mDB.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '"+tableName+"'", null);
+        if(cursor!=null) {
+            if(cursor.getCount()>0) {
+                cursor.close();
+                return true;
+            }
+            cursor.close();
+        }
+        return false;
+    }
+
+    void createTable(String tb) {
+        Log.i("log", "============================== mydb createtable " + tb);
+        mDB.execSQL("create table " + tb + " ("
+                + "_id integer primary key autoincrement,"
+                + "artist text,"
+                + "title text,"
+                + "url text,"
+                + "status int,"
+                + "filepath text"
+                + ");");
+    }
+
     public MyDB(Context ctx) {
-        mCtx = ctx;
+        Log.i("log", "============================== mydb constructor ");
+        mCtx = ctx;/*
+        DBHelper dbHelper;
+        dbHelper = new DBHelper(mCtx);
+        Log.i("log", "============================== mydb constructor dbhelper created");
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Log.i("log", "============================== mydb constructor db opened");
+        if(!isTableExists("vkActual", mCtx, false)) {
+            this.createTable("vkActual");
+        }
+        if(!isTableExists("vkLoaded", mCtx, false)) {
+            this.createTable("vkLoaded");
+        }
+        Log.i("log", "============================== mydb tables exist ");*/
     }
 
     // открыть подключение

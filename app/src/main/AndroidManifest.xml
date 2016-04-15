@@ -42,13 +42,12 @@
         <activity
             android:name=".ThemeActivity"
             android:theme="@android:style/Theme.Material.Dialog.NoActionBar" />
-        <activity
-            android:name=".SortActivity" />
-        <activity
-            android:name=".MenuActivity" />
+        <activity android:name=".SortActivity" />
+        <activity android:name=".MenuActivity" />
         <activity
             android:name=".AuthErrActivity"
             android:theme="@android:style/Theme.Material.Dialog.NoActionBar" />
+        <activity android:name=".NotLoadedActivity"></activity>
     </application>
 
 </manifest>

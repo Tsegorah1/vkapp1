@@ -43,10 +43,10 @@ public class ListActivity extends FragmentActivity implements LoaderManager.Load
         Cursor cursor=db.getAllData(db_table);
         String [] s=cursor.getColumnNames();
         Log.e("logg", "================== columns: " + s[0]+s[1]+s[2]);
-
+/*
         db.addRec(db_table, "art", "tit", "");
 
-        cursor=db.getAllData(db_table);
+        cursor=db.getAllData(db_table);*/
         int i=cursor.getCount();
 
         Log.e("logg", "================== rows:    " + i);
@@ -60,8 +60,9 @@ public class ListActivity extends FragmentActivity implements LoaderManager.Load
     }
 
     public void onClickMenu(View view) {
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, MainActivity.class);
+        //startActivity(intent);
+        this.finish();
     }
 
     public void onClickSearch(View view) {
