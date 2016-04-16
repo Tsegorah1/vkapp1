@@ -1,15 +1,18 @@
 package com.example.vkapp1;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 
@@ -46,11 +49,59 @@ public class MainActivity extends Activity {
     private boolean loading;
     private String filePath;
 
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+    /**
+     * Checks if the app has permission to write to device storage
+     *
+     * If the app does not has permission then the user will be prompted to grant permissions
+     *
+     * @param activity
+     */
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        Log.e("log", "======================== write premission "+permission);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            Log.e("log", "======================== no write premission");
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+            permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            Log.e("log", "======================== write premission " + permission);
+            if (permission != PackageManager.PERMISSION_GRANTED) {
+                Log.e("log", "======================== failed to get write premission");
+            }
+        }
+        int permission1 = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+        Log.e("log", "======================== read premission "+permission);
+        if (permission1 != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            Log.e("log", "======================== no read premission");
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+            permission1 = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+            Log.e("log", "======================== read premission "+permission);
+            if (permission1 != PackageManager.PERMISSION_GRANTED) {
+                Log.e("log", "======================== failed to get read premission");
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //VKSdk.initialize(this);
-        //String[] fingerprints = VKUtil.getCertificateFingerprint(this, this.getPackageName());
+        verifyStoragePermissions(this);
         setContentView(R.layout.activity_main);
         loading = false;
         if (!VKSdk.isLoggedIn()){
@@ -129,6 +180,12 @@ public class MainActivity extends Activity {
                     cursor.getString(c_artist)+
                     cursor.getString(c_title);
             filePath = Environment.DIRECTORY_MUSIC;
+            File sdPath = Environment.getExternalStorageDirectory();
+            // добавляем свой каталог к пути
+            sdPath = new File(sdPath.getAbsolutePath() + "/" + "MyFiles");
+            // создаем каталог
+            sdPath.mkdirs();
+            filePath = sdPath.getAbsolutePath();
             downloadFile(cursor.getString(c_url), filePath, fileName,8);
         }
     }
@@ -331,28 +388,75 @@ public class MainActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... params) {
+            boolean b = false;
+            strPath = "/storage/emulated/";
             try {
                 File file = new File(strPath, strName);
-                if (!file.exists()) {
-                    Log.e("log", "======================== file not exist");
+                Log.e("log", "======================== dir "+strPath);
+                Log.e("log", "======================== name "+strName);
+                if (file.getParentFile() == null) {
+                    Log.e("log", "======================== no parent file");
+                    file.getParentFile().mkdirs();
                 }
-                URL connection = new URL(strURL);
-                HttpURLConnection urlConn;
-                urlConn = (HttpURLConnection) connection.openConnection();
-                urlConn.setRequestMethod("GET");
-                urlConn.connect();
-                InputStream in;
-                in = urlConn.getInputStream();
-                OutputStream writer = new FileOutputStream(strPath+strName);
-                byte buffer[] = new byte[buffSize];
-                int c = in.read(buffer);
-                while (c > 0) {
-                    writer.write(buffer, 0, c);
-                    c = in.read(buffer);
+                try {
+                    if (!file.exists()) {
+                        b = file.createNewFile();
+                        if (b = true) Log.e("log", "======================== file created");
+                        if (b = false) Log.e("log", "======================== file already exists");
+                        Log.e("log", "======================== file not exist");
+                    }
+                } catch (IOException i) {
+                    Log.e("log", "======================== can_t create file ==== " + i.getMessage());
                 }
-                writer.flush();
-                writer.close();
-                in.close();
+                if (b || file.isFile()) {
+                    Log.e("log", "======================== writing in file");
+                    URL connection = new URL(strURL);
+                    HttpURLConnection urlConn = null;
+                    try {
+                        urlConn = (HttpURLConnection) connection.openConnection();
+                    } catch (IOException i) {
+                        Log.e("log", "======================== can_t open connection");
+                    }
+                    urlConn.setRequestMethod("GET");
+                    try {
+                        urlConn.connect();
+                    } catch (IOException i) {
+                        Log.e("log", "======================== can_t connect");
+                    }
+                    InputStream in = null;
+                    try {
+                        in = urlConn.getInputStream();
+                    } catch (IOException i) {
+                        Log.e("log", "======================== can_t get input stream");
+                    }
+                    OutputStream writer = new FileOutputStream(strPath + strName);
+                    byte buffer[] = new byte[buffSize];
+                    int c = 0;
+                    try {
+                        c = in.read(buffer);
+                    } catch (IOException i) {
+                        Log.e("log", "======================== can_t read");
+                    }
+                    while (c > 0) {
+                        try {
+                            writer.write(buffer, 0, c);
+                        } catch (IOException i) {
+                            Log.e("log", "======================== can_t write in cycle");
+                        }
+                        try {
+                            c = in.read(buffer);
+                        } catch (IOException i) {
+                            Log.e("log", "======================== can_t read in cycle");
+                        }
+                    }
+                    try {
+                        writer.flush();
+                        writer.close();
+                        in.close();
+                    } catch (IOException i) {
+                        Log.e("log", "======================== can_t flush/close");
+                    }
+                }
             }
             catch (MalformedURLException m) {
                 Log.e("log", "======================== malformed url exception");
@@ -363,9 +467,9 @@ public class MainActivity extends Activity {
             catch (FileNotFoundException m) {
                 Log.e("log", "======================== file not found exception");
             }
-            catch (IOException i) {
+            /*catch (IOException i) {
                 Log.e("log", "======================== io exception");
-            }
+            }*/
             return null;
         }
     }
