@@ -176,17 +176,17 @@ public class MainActivity extends Activity {
             }
         }
         for(cursor.moveToFirst(); cursor.getPosition()<10; cursor.moveToNext()) {//isAfterLast(); cursor.moveToNext()) {
-            String fileName = Integer.toString(cursor.getInt(c_id))+
-                    cursor.getString(c_artist)+
+            String fileName = Integer.toString(cursor.getInt(c_id))+"_"+
+                    cursor.getString(c_artist)+"_"+
                     cursor.getString(c_title);
             filePath = Environment.DIRECTORY_MUSIC;
             File sdPath = Environment.getExternalStorageDirectory();
             // добавляем свой каталог к пути
-            sdPath = new File(sdPath.getAbsolutePath() + "/" + "MyFiles");
+            sdPath = new File(sdPath.getAbsolutePath() + "/" + "MyFiles/");
             // создаем каталог
             sdPath.mkdirs();
             filePath = sdPath.getAbsolutePath();
-            downloadFile(cursor.getString(c_url), filePath, fileName,8);
+            downloadFile(cursor.getString(c_url), filePath, fileName,256);
         }
     }
 
@@ -382,16 +382,16 @@ public class MainActivity extends Activity {
             super();
             strURL = url;
             strPath = path;
-            strName = name;
+            strName = name+".mp3";
             buffSize = buff;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             boolean b = false;
-            strPath = "/storage/emulated/";
+            //strPath = "/storage/emulated/";
             try {
-                File file = new File(strPath, strName);
+                File file = new File(strPath,strName);
                 Log.e("log", "======================== dir "+strPath);
                 Log.e("log", "======================== name "+strName);
                 if (file.getParentFile() == null) {
@@ -429,25 +429,39 @@ public class MainActivity extends Activity {
                     } catch (IOException i) {
                         Log.e("log", "======================== can_t get input stream");
                     }
-                    OutputStream writer = new FileOutputStream(strPath + strName);
-                    byte buffer[] = new byte[buffSize];
+                    OutputStream writer = new FileOutputStream(file);
+                    /*byte buffer[] = new byte[buffSize];
                     int c = 0;
-                    try {
-                        c = in.read(buffer);
-                    } catch (IOException i) {
-                        Log.e("log", "======================== can_t read");
-                    }
                     while (c > 0) {
-                        try {
-                            writer.write(buffer, 0, c);
-                        } catch (IOException i) {
-                            Log.e("log", "======================== can_t write in cycle");
-                        }
                         try {
                             c = in.read(buffer);
                         } catch (IOException i) {
                             Log.e("log", "======================== can_t read in cycle");
                         }
+                        try {
+                            writer.write(buffer, 0, c);
+                        } catch (IOException i) {
+                            Log.e("log", "======================== can_t write in cycle");
+                        }
+                    }*/
+                    int count;
+                    //long total = 0;
+                    byte data[] = new byte[buffSize];
+                    try {
+                        while ((count = in.read(data)) != -1) {
+                            // allow canceling with back button
+                            if (isCancelled()) {
+                                in.close();
+                                return null;
+                            }
+                            //total += count;
+                            // publishing the progress....
+                            //if (fileLength > 0) // only if total length is known
+                            //    publishProgress((int) (total * 100 / fileLength));
+                            writer.write((data), 0, count);
+                        }
+                    } catch (IOException i) {
+                        Log.e("log", "======================== can_t create file ==== " + i.getMessage());
                     }
                     try {
                         writer.flush();
@@ -456,6 +470,7 @@ public class MainActivity extends Activity {
                     } catch (IOException i) {
                         Log.e("log", "======================== can_t flush/close");
                     }
+                    Log.e("log", "======================== file downloaded");
                 }
             }
             catch (MalformedURLException m) {
@@ -467,9 +482,6 @@ public class MainActivity extends Activity {
             catch (FileNotFoundException m) {
                 Log.e("log", "======================== file not found exception");
             }
-            /*catch (IOException i) {
-                Log.e("log", "======================== io exception");
-            }*/
             return null;
         }
     }
