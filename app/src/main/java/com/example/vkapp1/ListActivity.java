@@ -8,10 +8,10 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 public class ListActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -51,6 +51,7 @@ public class ListActivity extends FragmentActivity implements LoaderManager.Load
 
         Log.e("logg", "================== rows:    " + i);
         Log.e("logg", "================== xz:      " + cursor.getColumnName(0));
+
     }
 
     protected void onDestroy() {

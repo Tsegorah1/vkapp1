@@ -86,6 +86,10 @@ public class MyDB {
         return mDB.query(table, null, null, null, null, null, null);
     }
 
+    public Cursor getByID(String table, int id) {
+        return mDB.query(table, null, "_id = "+Integer.toString(id), null, null, null, null);
+    }
+
     // добавить запись в DB_TABLE
     public void addRec(String table, String artist,String title,String url) {//,String status,String filepath) {
         ContentValues cv = new ContentValues();
