@@ -39,6 +39,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
 
 //import android.support.v7.app.AppCompatActivity;
 
@@ -81,7 +82,7 @@ public class MainActivity extends Activity {
             }
         }
         int permission1 = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
-        Log.e("log", "======================== read premission "+permission);
+        Log.e("log", "======================== read premission " + permission);
         if (permission1 != PackageManager.PERMISSION_GRANTED) {
             // We don't have permission so prompt the user
             Log.e("log", "======================== no read premission");
@@ -121,19 +122,44 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        final Intent intent = new Intent(this, AuthErrActivity.class);
-        if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
-            @Override
-            public void onResult(VKAccessToken res) {
-                // Пользователь успешно авторизовался
+        if (requestCode == 111) {
+            if (resultCode == RESULT_OK) {
+                File sdPath = Environment.getExternalStorageDirectory();
+                // добавляем свой каталог к пути
+                sdPath = new File(sdPath.getAbsolutePath() + "/" + "MyFiles/");
+                // создаем каталог
+                sdPath.mkdirs();
+                ArrayList<File> files = ListFilesWithSubFolders(sdPath);
+                Log.e("log", "======================== total files " + files.size());
+                for (File file : sdPath.listFiles()) {
+                    file.delete();
+                    Log.e("log", "======================== deleted file: " + file.getName());
+                }
             }
-            @Override
-            public void onError(VKError error) {
-                // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
-                startActivity(intent);
+            else
+                if (resultCode == RESULT_CANCELED) {
+                    Log.e("log", "======================== file deletion cancelled");
+                }
+                else {
+                    Log.e("log", "======================== error in confirm activity");
+                }
+        }
+        else {
+            final Intent intent = new Intent(this, AuthErrActivity.class);
+            if (!VKSdk.onActivityResult(requestCode, resultCode, data, new VKCallback<VKAccessToken>() {
+                @Override
+                public void onResult(VKAccessToken res) {
+                    // Пользователь успешно авторизовался
+                }
+
+                @Override
+                public void onError(VKError error) {
+                    // Произошла ошибка авторизации (например, пользователь запретил авторизацию)
+                    startActivity(intent);
+                }
+            })) {
+                super.onActivityResult(requestCode, resultCode, data);
             }
-        })) {
-            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -273,7 +299,20 @@ public class MainActivity extends Activity {
 
     }
 
+    private ArrayList<File> ListFilesWithSubFolders(File sdPath) {
+        ArrayList<File> files = new ArrayList<File>();
+        for (File file : sdPath.listFiles()) {
+            if (file.isDirectory())
+                files.addAll(ListFilesWithSubFolders(file));
+            else
+                files.add(file);
+        }
+        return files;
+    }
+
     public void onClickDelete(View view) {
+        Intent intent = new Intent(this, ConfirmActivity.class);
+        startActivityForResult(intent, 111);
     }
 
     public boolean isTableExists(String tableName, SQLiteDatabase mDatabase, boolean openDb) {
