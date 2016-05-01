@@ -2,7 +2,6 @@ package com.example.vkapp1;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 
@@ -17,15 +16,17 @@ public class MySimpleCursorAdapter extends SimpleCursorAdapter {
 
     @Override
     public void setViewImage(ImageView v, String value) {
-        final ImageView w = v;
-
+        super.setViewImage(v, value);
+        //Cursor c = db.getByID();
+        //final ImageView w = v;
+/*
         w.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 w.getDrawable();
 
             }
-        });
+        });*/
     }
 
 }

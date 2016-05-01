@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
@@ -30,15 +29,6 @@ import com.vk.sdk.api.model.VKApiAudio;
 import com.vk.sdk.api.model.VKList;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.ArrayList;
 
 //import android.support.v7.app.AppCompatActivity;
@@ -49,6 +39,7 @@ public class MainActivity extends Activity {
     //final String LOG_TAG = "myLogs";
     private boolean loading;
     private String filePath;
+    private DBHelper dbHelper;
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
@@ -106,17 +97,25 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         loading = false;
         if (!VKSdk.isLoggedIn()){
-            VKSdk.login(this,VKScope.AUDIO);
+            VKSdk.login(this, VKScope.AUDIO);
         }
-        DBHelper dbHelper;
         dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Log.i("log", "========================== current DB version is "+db.getVersion());
         if(!isTableExists("vkActual", db, false)) {
+            Log.i("log", "========================== vkActual not exist");
             createTable("vkActual", db);
         }
         if(!isTableExists("vkLoaded", db, false)) {
+            Log.i("log", "========================== vkLoaded not exist");
             createTable("vkLoaded", db);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // закрываем подключение при выходе
         dbHelper.close();
     }
 
@@ -185,8 +184,8 @@ public class MainActivity extends Activity {
     }
 
     public void onClickLoad(View view) {
-        DBHelper dbHelper;
-        dbHelper = new DBHelper(this);
+        //DBHelper dbHelper;
+        //dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.query("vkActual", null, null, null, null, null, null);
         String [] columnNames = cursor.getColumnNames();
@@ -204,7 +203,7 @@ public class MainActivity extends Activity {
         for(cursor.moveToFirst(); cursor.getPosition()<10; cursor.moveToNext()) {//isAfterLast(); cursor.moveToNext()) {
             String fileName = Integer.toString(cursor.getInt(c_id))+"_"+
                     cursor.getString(c_artist)+"_"+
-                    cursor.getString(c_title);
+                    cursor.getString(c_title)+".mp3";
             filePath = Environment.DIRECTORY_MUSIC;
             File sdPath = Environment.getExternalStorageDirectory();
             // добавляем свой каталог к пути
@@ -213,6 +212,10 @@ public class MainActivity extends Activity {
             sdPath.mkdirs();
             filePath = sdPath.getAbsolutePath();
             downloadFile(cursor.getString(c_url), filePath, fileName,256);
+            ContentValues cv = new ContentValues();
+            cv.put("status", 2);
+            String[] args = {cursor.getString(c_id)};
+            db.update("vkActual",cv,"_id = ?", args);
         }
     }
 
@@ -258,6 +261,7 @@ public class MainActivity extends Activity {
                     contentValues.put("url", vkList.get(i).url);
                     contentValues.put("status", 0);
                     contentValues.put("filepath", "");
+                    contentValues.put("filename", "");
                     Log.i("log", "========================== onComplete r cv created(" + i + ")");
                     db.insert("vkActual", null, contentValues);
                     Log.i("log", "==========================" + vkList.get(i).title);
@@ -331,7 +335,7 @@ public class MainActivity extends Activity {
 
         Cursor cursor = mDatabase.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '"+tableName+"'", null);
         if(cursor!=null) {
-            if(cursor.getCount()>0) {
+            if (cursor.getCount() > 0) {
                 cursor.close();
                 return true;
             }
@@ -347,7 +351,8 @@ public class MainActivity extends Activity {
                 + "title text,"
                 + "url text,"
                 + "status int,"
-                + "filepath text"
+                + "filepath text,"
+                + "filename text"
                 + ");");
         Log.i("log", "============================== createdTable "+tb);
     }
@@ -358,13 +363,8 @@ public class MainActivity extends Activity {
 
         public DBHelper(Context context) {
             // конструктор суперкласса
-            super(context, "myDB", null, 1);
+            super(context, "myDB", null, 2);
 
-        }
-
-        public DBHelper(Context context, String s) {
-            // конструктор суперкласса
-            super(context, s, null, 1);
         }
 
         @Override
@@ -372,22 +372,8 @@ public class MainActivity extends Activity {
             //
             // создаем таблицу с полями
             //try {
-                db.execSQL("create table " + tbName1 + " ("
-                        + "_id integer primary key autoincrement,"
-                        + "artist text,"
-                        + "title text,"
-                        + "url text,"
-                        + "status integer,"
-                        + "filepath text"
-                        + ");");
-                db.execSQL("create table " + tbName2 + " ("
-                        + "_id int primary key autoincrement,"
-                        + "artist text,"
-                        + "title text,"
-                        + "url text,"
-                        + "status int,"
-                        + "filepath text"
-                        + ");");
+            createTable(tbName1, db);
+            createTable(tbName2, db);
                 Log.w("log","============================== tables created");
             //}
             //catch(SQLException ex) {
@@ -406,122 +392,10 @@ public class MainActivity extends Activity {
 */
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-        }
-    }
-
-    class DownloadTask extends AsyncTask<Void, Void, Void> {
-
-        String strURL;
-        String strPath;
-        String strName;
-        int buffSize;
-
-        public DownloadTask(String url, String path, String name, int buff) {
-            super();
-            strURL = url;
-            strPath = path;
-            strName = name+".mp3";
-            buffSize = buff;
+            Log.i("log", "========================== onUpgrade old="+oldVersion+", new="+newVersion);
+            db.execSQL("ALTER TABLE vkLoaded ADD COLUMN filename text DEFAULT null");
+            db.execSQL("ALTER TABLE vkActual ADD COLUMN filename text DEFAULT null");
         }
 
-        @Override
-        protected Void doInBackground(Void... params) {
-            boolean b = false;
-            //strPath = "/storage/emulated/";
-            try {
-                File file = new File(strPath,strName);
-                Log.e("log", "======================== dir "+strPath);
-                Log.e("log", "======================== name "+strName);
-                if (file.getParentFile() == null) {
-                    Log.e("log", "======================== no parent file");
-                    file.getParentFile().mkdirs();
-                }
-                try {
-                    if (!file.exists()) {
-                        b = file.createNewFile();
-                        if (b = true) Log.e("log", "======================== file created");
-                        if (b = false) Log.e("log", "======================== file already exists");
-                        Log.e("log", "======================== file not exist");
-                    }
-                } catch (IOException i) {
-                    Log.e("log", "======================== can_t create file ==== " + i.getMessage());
-                }
-                if (b || file.isFile()) {
-                    Log.e("log", "======================== writing in file");
-                    URL connection = new URL(strURL);
-                    HttpURLConnection urlConn = null;
-                    try {
-                        urlConn = (HttpURLConnection) connection.openConnection();
-                    } catch (IOException i) {
-                        Log.e("log", "======================== can_t open connection");
-                    }
-                    urlConn.setRequestMethod("GET");
-                    try {
-                        urlConn.connect();
-                    } catch (IOException i) {
-                        Log.e("log", "======================== can_t connect");
-                    }
-                    InputStream in = null;
-                    try {
-                        in = urlConn.getInputStream();
-                    } catch (IOException i) {
-                        Log.e("log", "======================== can_t get input stream");
-                    }
-                    OutputStream writer = new FileOutputStream(file);
-                    /*byte buffer[] = new byte[buffSize];
-                    int c = 0;
-                    while (c > 0) {
-                        try {
-                            c = in.read(buffer);
-                        } catch (IOException i) {
-                            Log.e("log", "======================== can_t read in cycle");
-                        }
-                        try {
-                            writer.write(buffer, 0, c);
-                        } catch (IOException i) {
-                            Log.e("log", "======================== can_t write in cycle");
-                        }
-                    }*/
-                    int count;
-                    //long total = 0;
-                    byte data[] = new byte[buffSize];
-                    try {
-                        while ((count = in.read(data)) != -1) {
-                            // allow canceling with back button
-                            if (isCancelled()) {
-                                in.close();
-                                return null;
-                            }
-                            //total += count;
-                            // publishing the progress....
-                            //if (fileLength > 0) // only if total length is known
-                            //    publishProgress((int) (total * 100 / fileLength));
-                            writer.write((data), 0, count);
-                        }
-                    } catch (IOException i) {
-                        Log.e("log", "======================== can_t create file ==== " + i.getMessage());
-                    }
-                    try {
-                        writer.flush();
-                        writer.close();
-                        in.close();
-                    } catch (IOException i) {
-                        Log.e("log", "======================== can_t flush/close");
-                    }
-                    Log.e("log", "======================== file downloaded");
-                }
-            }
-            catch (MalformedURLException m) {
-                Log.e("log", "======================== malformed url exception");
-            }
-            catch (ProtocolException m) {
-                Log.e("log", "======================== protocol exception");
-            }
-            catch (FileNotFoundException m) {
-                Log.e("log", "======================== file not found exception");
-            }
-            return null;
-        }
     }
 }

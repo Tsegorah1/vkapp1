@@ -11,8 +11,8 @@ public class MyDB {
 
     private final Context mCtx;
 
-    private DBHelper mDBHelper;
-    private SQLiteDatabase mDB;
+    public DBHelper mDBHelper;
+    public SQLiteDatabase mDB;
 
 
     public boolean isTableExists(String tableName, Context ctx, boolean openDb) {
@@ -86,8 +86,8 @@ public class MyDB {
         return mDB.query(table, null, null, null, null, null, null);
     }
 
-    public Cursor getByID(String table, int id) {
-        return mDB.query(table, null, "_id = "+Integer.toString(id), null, null, null, null);
+    public Cursor getByID(String table, long id) {
+        return mDB.query(table, null, "_id = "+Long.toString(id), null, null, null, null);
     }
 
     // добавить запись в DB_TABLE
@@ -112,7 +112,7 @@ public class MyDB {
         public String tbName1 = "vkLoaded", tbName2 = "vkActual";
 
         public DBHelper(Context context) {
-            super(context, "myDB", null, 1);
+            super(context, "myDB", null, 2);
         }
 
         // создаем и заполняем БД
