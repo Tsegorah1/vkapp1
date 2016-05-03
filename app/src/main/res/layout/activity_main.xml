@@ -173,7 +173,7 @@
             android:src="@drawable/info_icon"
             android:contentDescription="@string/list_menu_icon"
             android:nestedScrollingEnabled="false"
-            android:onClick="onClickMenu" />
+            android:onClick="onClickAbout" />
 
         <TextView
             android:layout_width="wrap_content"
