@@ -13,30 +13,50 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/scrollView2"
-        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true">
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignTop="@+id/scrollView2">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/about_text"
-                android:id="@+id/textView2"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="New Text"
-                android:id="@+id/textView3" />
-        </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="55dp"
+        android:id="@+id/linearLayout"
+        android:layout_below="@+id/scrollView2"
+        android:layout_alignParentStart="true">
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/about_text"
+        android:id="@+id/textView2"
+        android:textSize="20sp"
+        android:layout_above="@+id/imageView2"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="350dp"
+        android:layout_height="338dp"
+        android:text="@string/about_developer"
+        android:id="@+id/textView3"
+        android:layout_below="@+id/linearLayout"
+        android:layout_marginTop="65dp"
+        android:phoneNumber="false"
+        android:linksClickable="true"
+        android:clickable="true"
+        android:autoLink="web|phone|email" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView2"
+        android:src="@drawable/ic_ab_app"
+        android:layout_marginTop="23dp"
+        android:layout_below="@+id/linearLayout"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
