@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/imageButton4"
                 android:background="#00e53535"
-                android:src="@drawable/menu_icon"
+                android:src="@drawable/sort_icon"
                 android:contentDescription="@string/list_menu_icon"
                 android:nestedScrollingEnabled="false"
                 android:onClick="onClickSort" />

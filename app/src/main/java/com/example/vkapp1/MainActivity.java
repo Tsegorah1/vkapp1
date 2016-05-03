@@ -357,6 +357,11 @@ public class MainActivity extends Activity {
         Log.i("log", "============================== createdTable "+tb);
     }
 
+    public void onClickMenu(View view) {
+        Intent intent = new Intent(this, ListActivity.class);
+        startActivity(intent);
+    }
+
     class DBHelper extends SQLiteOpenHelper {
 
         public String tbName1 = "vkLoaded", tbName2 = "vkActual";

@@ -45,8 +45,7 @@
             android:layout_alignParentBottom="false"
             android:layout_alignParentLeft="false"
             android:layout_alignParentRight="false"
-            android:layout_alignWithParentIfMissing="false"
-            android:onClick="onClickAct" />
+            android:layout_alignWithParentIfMissing="false" />
 
     </RelativeLayout>
 </LinearLayout>
