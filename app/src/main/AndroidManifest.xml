@@ -50,7 +50,9 @@
             android:name=".AuthErrActivity"
             android:theme="@android:style/Theme.Material.Dialog.NoActionBar" />
         <activity android:name=".NotLoadedActivity" />
-        <activity android:name=".ConfirmActivity"></activity>
+        <activity
+            android:name=".ConfirmActivity"
+            android:theme="@android:style/Theme.Material.Dialog.NoActionBar"/>
     </application>
 
 </manifest>
