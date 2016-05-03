@@ -41,4 +41,7 @@
     <string name="sort_sort">Сортировать</string>
     <string name="err_message">Ошибка авторизации</string>
     <string name="load_in_progress">Подождите, список обновляется</string>
+    <string name="confirm">Удалить все аудиофайлы?</string>
+    <string name="no">Нет</string>
+    <string name="yes">Да</string>
 </resources>

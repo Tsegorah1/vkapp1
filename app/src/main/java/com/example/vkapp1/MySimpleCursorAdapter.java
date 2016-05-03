@@ -2,7 +2,7 @@ package com.example.vkapp1;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.view.View;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 
@@ -17,15 +17,45 @@ public class MySimpleCursorAdapter extends SimpleCursorAdapter {
 
     @Override
     public void setViewImage(ImageView v, String value) {
-        final ImageView w = v;
-
+        String uri;
+        Log.e("log", "====================== setViewImage");/*
+        switch (this.getCursor().getInt(4)) {
+            case 0:
+                Log.e("log", "======================            0");
+                uri = "@drawable/neload_icon.png";
+                break;
+            case 2:
+                Log.e("log", "======================            2");
+                uri = "@drawable/delete_icon.png";
+                break;
+            default:
+                Log.e("log", "======================            default");
+                uri = "@drawable/reload_icon.png";
+        }*/
+        super.setViewImage(v, value);//uri);
+        switch (this.getCursor().getInt(4)) {
+            case 0:
+                Log.e("log", "======================            0");
+                v.setImageResource(R.drawable.neload_icon);;
+                break;
+            case 2:
+                Log.e("log", "======================            2");
+                v.setImageResource(R.drawable.delete_icon);
+                break;
+            default:
+                Log.e("log", "======================            default");
+                v.setImageResource(R.drawable.reload_icon);
+        }
+        //Cursor c = db.getByID();
+        //final ImageView w = v;
+/*
         w.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 w.getDrawable();
 
             }
-        });
+        });*/
     }
 
 }
