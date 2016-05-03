@@ -44,4 +44,5 @@
     <string name="confirm">Удалить все аудиофайлы?</string>
     <string name="no">Нет</string>
     <string name="yes">Да</string>
+    <string name="hello">hello</string>
 </resources>

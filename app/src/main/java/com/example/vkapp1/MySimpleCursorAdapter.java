@@ -3,6 +3,7 @@ package com.example.vkapp1;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 
@@ -13,6 +14,8 @@ public class MySimpleCursorAdapter extends SimpleCursorAdapter {
     public MySimpleCursorAdapter(Context context, int layout, Cursor c, String[] from,int[] to, int flags, MyDB mdb) {
         super(context, layout, c, from, to, flags);
         db = mdb;
+        MyViewBinder mvb = new MyViewBinder();
+        this.setViewBinder(mvb);
     }
 
     @Override
@@ -58,4 +61,32 @@ public class MySimpleCursorAdapter extends SimpleCursorAdapter {
         });*/
     }
 
+    class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
+        @Override
+        public boolean setViewValue(View v, Cursor cursor, int columnIndex) {
+            Log.e("log", "====================== setViewValue started");
+
+            if (v.getId() == R.id.imageView && columnIndex == 4) {//v instanceof ImageView) {
+                Log.e("log", "====================== instance of imageView");
+                switch (cursor.getInt(4)) {
+                    case 0:
+                        Log.e("log", "======================            0");
+                        ((ImageView) v).setImageResource(R.drawable.neload_icon);
+                        break;
+                    case 2:
+                        Log.e("log", "======================            2");
+                        ((ImageView) v).setImageResource(R.drawable.delete_icon);
+                        break;
+                    default:
+                        Log.e("log", "======================            default");
+                        ((ImageView) v).setImageResource(R.drawable.reload_icon);
+                }
+                return true;
+            }
+            else {
+                Log.e("log", "====================== other instance");
+                return false;
+            }
+        }
+    }
 }
