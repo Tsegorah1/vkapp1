@@ -227,9 +227,10 @@ public class MainActivity extends Activity {
     }
 
     public void onClickPlace(View view) {
-        Intent intent = new Intent(this, PlaceActivity.class);
-        startActivity(intent);
+        PlaceActivity fileDialog = new PlaceActivity(this);
+        fileDialog.show();
     }
+
 
     public void onClickStyle(View view) {
         Intent intent = new Intent(this, ThemeActivity.class);
@@ -307,6 +308,8 @@ public class MainActivity extends Activity {
 
     }
 
+
+
     private ArrayList<File> ListFilesWithSubFolders(File sdPath) {
         ArrayList<File> files = new ArrayList<File>();
         for (File file : sdPath.listFiles()) {
@@ -365,6 +368,8 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, ListActivity.class);
         startActivity(intent);
     }
+
+
 
     class DBHelper extends SQLiteOpenHelper {
 
