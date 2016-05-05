@@ -61,4 +61,6 @@
                                     <b>Майстренко Константин\n</b>
                                         email: const8my@gmail.com\n
                                     ----------------------------------------\n</string>
+    <string name="load_cancelled">Загрузка завершена</string>
+    <string name="list_refreshed">Список обновлён</string>
 </resources>

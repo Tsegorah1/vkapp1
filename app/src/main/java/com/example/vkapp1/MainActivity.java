@@ -101,7 +101,7 @@ public class MainActivity extends Activity {
         }
         dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Log.i("log", "========================== current DB version is "+db.getVersion());
+        Log.i("log", "========================== current DB version is " + db.getVersion());
         if(!isTableExists("vkActual", db, false)) {
             Log.i("log", "========================== vkActual not exist");
             createTable("vkActual", db);
@@ -217,6 +217,8 @@ public class MainActivity extends Activity {
             String[] args = {cursor.getString(c_id)};
             db.update("vkActual",cv,"_id = ?", args);
         }
+        Intent intent = new Intent(this, LoadedActivity.class);
+        startActivity(intent);
     }
 
     public void downloadFile(String strURL, String strPath, String strName, int buffSize) {
@@ -282,6 +284,8 @@ public class MainActivity extends Activity {
                 }
 
                 loading = false;
+                Intent intent = new Intent(context, RefreshedActivity.class);
+                startActivity(intent);
             }
 
             @Override

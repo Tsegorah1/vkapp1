@@ -52,7 +52,13 @@
         <activity android:name=".NotLoadedActivity" />
         <activity
             android:name=".ConfirmActivity"
-            android:theme="@android:style/Theme.Material.Dialog.NoActionBar"/>
+            android:theme="@android:style/Theme.Material.Dialog.NoActionBar" />
+        <activity
+            android:name=".LoadedActivity"
+            android:theme="@android:style/Theme.Material.Dialog.NoActionBar" />
+        <activity
+            android:name=".RefreshedActivity"
+            android:theme="@android:style/Theme.Material.Dialog.NoActionBar" />
     </application>
 
 </manifest>

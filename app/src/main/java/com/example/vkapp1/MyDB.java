@@ -86,6 +86,14 @@ public class MyDB {
         return mDB.query(table, null, null, null, null, null, null);
     }
 
+    public Cursor sortByField(String field, boolean revers) {
+        String[]fields = {field};
+        if (revers)
+            return mDB.query("vkActual", null, null, null, null, null, field+" ASC");
+        else
+            return mDB.query("vkActual", null, null, null, null, null, field+" DESC");
+    }
+
     public Cursor getByID(String table, long id) {
         return mDB.query(table, null, "_id = "+Long.toString(id), null, null, null, null);
     }
