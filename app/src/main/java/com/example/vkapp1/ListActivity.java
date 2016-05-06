@@ -1,11 +1,11 @@
 package com.example.vkapp1;
 
 import android.app.Activity;
-import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,7 +16,7 @@ import android.widget.ListView;
 
 import java.io.File;
 
-public class ListActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ListActivity extends Activity implements android.app.LoaderManager.LoaderCallbacks<Cursor> {
 
     //private static final int CM_DELETE_ID = 1;
     ListView lvData;
@@ -26,10 +26,11 @@ public class ListActivity extends Activity implements LoaderManager.LoaderCallba
     String db_table = "vkActual";
     int currentId = 0;
     DownloadTask downloadTask;
-    android.app.LoaderManager lm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        final Context context = this;
+        final android.app.LoaderManager.LoaderCallbacks<Cursor> c = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         //lm = this.getLoaderManager();
@@ -71,9 +72,11 @@ public class ListActivity extends Activity implements LoaderManager.LoaderCallba
                             cursor.getString(1) + "_" +
                             cursor.getString(2) + ".mp3";
                     Log.d("log", "======================= download file task");
-                    downloadFile(cursor.getString(3), filePath, fileName, 256);
+                    //downloadFile(cursor.getString(3), filePath, fileName, 256);
+                    downloadFileAsyncLoader(cursor.getString(3), filePath, fileName, 256);
+
                     ContentValues cv = new ContentValues();
-                    cv.put("status", 2);
+                    cv.put("status", 1);
                     cv.put("filepath", filePath);
                     cv.put("filename", fileName);
                     String[] args = {cursor.getString(0)};
@@ -82,6 +85,8 @@ public class ListActivity extends Activity implements LoaderManager.LoaderCallba
                 if (cursor.getInt(4) == 2) {
                     Log.d("log", "======================= delete file task");
                     File f = new File(cursor.getString(5), cursor.getString(6));
+                    Log.d("log", "======================= path: "+cursor.getString(5));
+                    Log.d("log", "======================= file: "+cursor.getString(6));
                     String[] s = f.getParentFile().list();
                     Log.d("log", "======================= list of files in d:");
                     for (String i : s) {
@@ -151,6 +156,18 @@ public class ListActivity extends Activity implements LoaderManager.LoaderCallba
         downloadTask.execute();
     }
 
+    public void downloadFileAsyncLoader(String strURL, String strPath, String strName, int buffSize) {
+        Loader<Cursor> loader;
+        Bundle bundle = new Bundle();
+        bundle.putString("url", strURL);
+        bundle.putString("path", strPath);
+        bundle.putString("name", strName);
+        bundle.putInt("buff", buffSize);
+        loader = getLoaderManager().getLoader(0);
+        loader = getLoaderManager().restartLoader(0, bundle, this);
+        loader.forceLoad();
+    }
+
     public void onClickMenu(View view) {
         //Intent intent = new Intent(this, MainActivity.class);
         //startActivity(intent);
@@ -187,8 +204,8 @@ public class ListActivity extends Activity implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public android.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new DownloadTaskLoader(this, args);
     }
 
     @Override

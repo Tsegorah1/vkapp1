@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -33,7 +34,7 @@ import java.util.ArrayList;
 
 //import android.support.v7.app.AppCompatActivity;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements android.app.LoaderManager.LoaderCallbacks<Cursor>{
 
     //private String[] scope = new String[] {VKScope.AUDIO};
     //final String LOG_TAG = "myLogs";
@@ -41,11 +42,17 @@ public class MainActivity extends Activity {
     private String filePath;
     private DBHelper dbHelper;
 
+    private int totalDone;
+    private int totalRequired;
+
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+
+    int currentId = 1;
+    SQLiteDatabase mdb;
 
     /**
      * Checks if the app has permission to write to device storage
@@ -187,7 +194,10 @@ public class MainActivity extends Activity {
         //DBHelper dbHelper;
         //dbHelper = new DBHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        mdb = db;
         Cursor cursor = db.query("vkActual", null, null, null, null, null, null);
+        totalDone = 0;
+        totalRequired = cursor.getColumnCount();
         String [] columnNames = cursor.getColumnNames();
         int columnCount = cursor.getColumnCount();
         int c_id=0, c_artist=0, c_title=0, c_url=0;
@@ -211,19 +221,31 @@ public class MainActivity extends Activity {
             // создаем каталог
             sdPath.mkdirs();
             filePath = sdPath.getAbsolutePath();
-            downloadFile(cursor.getString(c_url), filePath, fileName,256);
+            downloadFileAsyncLoader(cursor.getString(c_url), filePath, fileName, 256);
             ContentValues cv = new ContentValues();
             cv.put("status", 2);
+            cv.put("filepath", filePath);
+            cv.put("filename", fileName);
             String[] args = {cursor.getString(c_id)};
             db.update("vkActual",cv,"_id = ?", args);
         }
-        Intent intent = new Intent(this, LoadedActivity.class);
-        startActivity(intent);
     }
 
-    public void downloadFile(String strURL, String strPath, String strName, int buffSize) {
+   /* public void downloadFile(String strURL, String strPath, String strName, int buffSize) {
         DownloadTask downloadTask = new DownloadTask(strURL, strPath, strName, buffSize);
         downloadTask.execute();
+    }*/
+
+    public void downloadFileAsyncLoader(String strURL, String strPath, String strName, int buffSize) {
+        Loader<Cursor> loader;
+        Bundle bundle = new Bundle();
+        bundle.putString("url", strURL);
+        bundle.putString("path", strPath);
+        bundle.putString("name", strName);
+        bundle.putInt("buff", buffSize);
+        loader = getLoaderManager().getLoader(0);
+        loader = getLoaderManager().restartLoader(0, bundle, this);
+        loader.forceLoad();
     }
 
     public void onClickPlace(View view) {
@@ -308,8 +330,6 @@ public class MainActivity extends Activity {
 
     }
 
-
-
     private ArrayList<File> ListFilesWithSubFolders(File sdPath) {
         ArrayList<File> files = new ArrayList<File>();
         for (File file : sdPath.listFiles()) {
@@ -369,6 +389,33 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new DownloadTaskLoader(this, args);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.w("logg", "================== onLoadFinished");
+        ContentValues cv = new ContentValues();
+        cv.put("status", 2);
+        String[] args = {Integer.toString(currentId)};
+        mdb.update("vkActual", cv, "_id = ?", args);
+        totalDone++;
+        //if(totalDone == 10) {//totalRequired) {
+            Intent intent = new Intent(this, LoadedActivity.class);
+            startActivity(intent);
+        //}
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        Log.w("logg", "================== onLoadFinished");
+        ContentValues cv = new ContentValues();
+        cv.put("status", 2);
+        String[] args = {Integer.toString(currentId)};
+        mdb.update("vkActual", cv, "_id = ?", args);
+    }
 
 
     class DBHelper extends SQLiteOpenHelper {
