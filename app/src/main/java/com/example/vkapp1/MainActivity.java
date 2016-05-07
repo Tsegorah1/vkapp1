@@ -51,7 +51,7 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
-    int currentId = 1;
+    //int currentId = 1;
     SQLiteDatabase mdb;
 
     /**
@@ -221,7 +221,7 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
             // создаем каталог
             sdPath.mkdirs();
             filePath = sdPath.getAbsolutePath();
-            downloadFileAsyncLoader(cursor.getString(c_url), filePath, fileName, 256);
+            downloadFileAsyncLoader(cursor.getInt(0), cursor.getString(c_url), filePath, fileName, 256);
             ContentValues cv = new ContentValues();
             cv.put("status", 2);
             cv.put("filepath", filePath);
@@ -236,15 +236,15 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
         downloadTask.execute();
     }*/
 
-    public void downloadFileAsyncLoader(String strURL, String strPath, String strName, int buffSize) {
+    public void downloadFileAsyncLoader(int id, String strURL, String strPath, String strName, int buffSize) {
         Loader<Cursor> loader;
         Bundle bundle = new Bundle();
         bundle.putString("url", strURL);
         bundle.putString("path", strPath);
         bundle.putString("name", strName);
         bundle.putInt("buff", buffSize);
-        loader = getLoaderManager().getLoader(0);
-        loader = getLoaderManager().restartLoader(0, bundle, this);
+        //loader = getLoaderManager().getLoader(0);
+        loader = getLoaderManager().restartLoader(id, bundle, this);
         loader.forceLoad();
     }
 
@@ -399,22 +399,22 @@ public class MainActivity extends Activity implements android.app.LoaderManager.
         Log.w("logg", "================== onLoadFinished");
         ContentValues cv = new ContentValues();
         cv.put("status", 2);
-        String[] args = {Integer.toString(currentId)};
+        String[] args = {Integer.toString(loader.getId())};
         mdb.update("vkActual", cv, "_id = ?", args);
         totalDone++;
-        //if(totalDone == 10) {//totalRequired) {
+        if(totalDone == 10) {//totalRequired) {
             Intent intent = new Intent(this, LoadedActivity.class);
             startActivity(intent);
-        //}
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        Log.w("logg", "================== onLoadFinished");
+        /*Log.w("logg", "================== onLoadFinished");
         ContentValues cv = new ContentValues();
         cv.put("status", 2);
         String[] args = {Integer.toString(currentId)};
-        mdb.update("vkActual", cv, "_id = ?", args);
+        mdb.update("vkActual", cv, "_id = ?", args);*/
     }
 
 

@@ -39,7 +39,7 @@ public class MySimpleCursorAdapter extends SimpleCursorAdapter {
         switch (this.getCursor().getInt(4)) {
             case 0:
                 Log.e("log", "======================            0");
-                v.setImageResource(R.drawable.neload_icon);;
+                v.setImageResource(R.drawable.neload_icon);
                 break;
             case 2:
                 Log.e("log", "======================            2");
@@ -47,7 +47,7 @@ public class MySimpleCursorAdapter extends SimpleCursorAdapter {
                 break;
             default:
                 Log.e("log", "======================            default");
-                v.setImageResource(R.drawable.reload_icon);
+                v.setImageResource(R.drawable.reload_icon_anim);
         }
         //Cursor c = db.getByID();
         //final ImageView w = v;
@@ -79,7 +79,7 @@ public class MySimpleCursorAdapter extends SimpleCursorAdapter {
                         break;
                     default:
                         Log.e("log", "======================            default");
-                        ((ImageView) v).setImageResource(R.drawable.reload_icon);
+                        ((ImageView) v).setImageResource(R.drawable.reload_icon_anim);
                 }
                 return true;
             }
