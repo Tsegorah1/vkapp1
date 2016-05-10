@@ -40,4 +40,27 @@
     <string name="sort_field">Поле для сортировки:</string>
     <string name="sort_sort">Сортировать</string>
     <string name="err_message">Ошибка авторизации</string>
+    <string name="load_in_progress">Подождите, список обновляется</string>
+    <string name="confirm">Удалить все аудиофайлы?</string>
+    <string name="no">Нет</string>
+    <string name="yes">Да</string>
+    <string name="hello">hello</string>
+    <string name="about_developer" translatable="false">MuzVK для Android\n
+                                    Версия 1.0 (сборка 15)\n
+                                    ----------------------------------------\n
+                                    Приложение является продуктом курсового\n
+                                    проекта по дисциплине:\n
+                                    \"Технологии разработки ПО\"\n
+                                    ----------------------------------------\n
+                                    \n\n\n\n
+                                    Обратная связь\n
+                                    ----------------------------------------\n
+                                    Разработчики приложения:\n
+                                    <b>Невирковец Николай\n</b>
+                                        email: mikola335@gmail.com\n
+                                    <b>Майстренко Константин\n</b>
+                                        email: const8my@gmail.com\n
+                                    ----------------------------------------\n</string>
+    <string name="load_cancelled">Загрузка завершена</string>
+    <string name="list_refreshed">Список обновлён</string>
 </resources>

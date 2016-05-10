@@ -70,9 +70,9 @@
                 android:text="@string/search_search"
                 android:id="@+id/button2"
                 android:layout_below="@+id/spinner2"
-                android:layout_alignEnd="@+id/spinner2"
                 android:layout_marginTop="29dp"
-                android:onClick="onClickSearch" />
+                android:onClick="onClickSearch"
+                android:layout_alignEnd="@+id/spinner2" />
 
             <Button
                 android:layout_width="wrap_content"
